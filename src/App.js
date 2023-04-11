@@ -9,14 +9,12 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
   const userLoggedInStatsInBrowser = localStorage.getItem('isLoggedIn');
-  
+
   useEffect(() => {
-    if(localStorage.getItem('isLoggedIn') === '1') {
+    if(userLoggedInStatsInBrowser === '1') {
       setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
     }
-  }, [userLoggedInStatsInBrowser]);
+  }, []);
 
   const loginHandler = (email, password) => {
     // We should of course check email and password
