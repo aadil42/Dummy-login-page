@@ -8,12 +8,17 @@ const emailReducer = (preState, action) => {
   if(action.type === 'EMAIL_INPUT') {
     return {...preState, val: action.val};
   }
+  if(action.type === "VALIDATE_INPUT") {
+    return {...preState, isValid: action.val.includes('@')}
+  }
   return preState;
 }
 
+
+
 const Login = (props) => {
   // const [enteredEmail, setEnteredEmail] = useState('');
-  const [emailIsValid, setEmailIsValid] = useState();
+  // const [emailIsValid, setEmailIsValid] = useState();
   const [enteredPassword, setEnteredPassword] = useState('');
   const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
@@ -47,7 +52,8 @@ const Login = (props) => {
   };
 
   const validateEmailHandler = () => {
-    setEmailIsValid(emailState.val.includes('@'));
+    emailDispatch({type: 'VALIDATE_INPUT', val: emailState.val})
+    // setEmailIsValid(emailState.val.includes('@'));
   };
 
   const validatePasswordHandler = () => {
@@ -64,7 +70,7 @@ const Login = (props) => {
       <form onSubmit={submitHandler}>
         <div
           className={`${classes.control} ${
-            emailIsValid === false ? classes.invalid : ''
+            emailState.isValid === false ? classes.invalid : ''
           }`}
         >
           <label htmlFor="email">E-Mail</label>
