@@ -1,24 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
 import Button from '../UI/Button/Button';
 
+const emailReducer = (preState, action) => {
+  if(action.type === 'EMAIL_INPUT') {
+    return {...preState, val: action.val};
+  }
+  return preState;
+}
+
 const Login = (props) => {
-  const [enteredEmail, setEnteredEmail] = useState('');
+  // const [enteredEmail, setEnteredEmail] = useState('');
   const [emailIsValid, setEmailIsValid] = useState();
   const [enteredPassword, setEnteredPassword] = useState('');
   const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
 
+  const [emailState, emailDispatch] = useReducer(emailReducer, {
+    isValid: '',
+    val: ''
+  });
+
   useEffect(() => {
-    setFormIsValid(
-      enteredEmail.includes('@') && enteredPassword.trim().length > 6
-    );
-  }, [enteredEmail, enteredPassword]);
+    const identifier = setTimeout(() => {
+      console.log('stimulating network request');
+      setFormIsValid(
+        emailState.val.includes('@') && enteredPassword.trim().length > 6
+      );
+    }, 500);
+      //aaaaaaaaaa
+    return () => {
+      console.log('CLEANING');
+      clearTimeout(identifier);
+    }
+  }, [emailState.val, enteredPassword]);
 
   const emailChangeHandler = (event) => {
-    setEnteredEmail(event.target.value);
+    emailDispatch({type: 'EMAIL_INPUT', val: event.target.value});
+    // setEnteredEmail(event.target.value);
   };
 
   const passwordChangeHandler = (event) => {
@@ -26,7 +47,7 @@ const Login = (props) => {
   };
 
   const validateEmailHandler = () => {
-    setEmailIsValid(enteredEmail.includes('@'));
+    setEmailIsValid(emailState.val.includes('@'));
   };
 
   const validatePasswordHandler = () => {
@@ -35,7 +56,7 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(enteredEmail, enteredPassword);
+    props.onLogin(emailState.val, enteredPassword);
   };
 
   return (
@@ -50,7 +71,7 @@ const Login = (props) => {
           <input
             type="email"
             id="email"
-            value={enteredEmail}
+            value={emailState.val}
             onChange={emailChangeHandler}
             onBlur={validateEmailHandler}
           />
