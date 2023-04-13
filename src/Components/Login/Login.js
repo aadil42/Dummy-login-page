@@ -14,12 +14,18 @@ const emailReducer = (preState, action) => {
   return preState;
 }
 
+const passwordReducer = (preState, action) => {
+  if(action.type === 'PASSWORD_INPUT') {
+    return {...preState, val: action.val};
+  }
+  return preState;
+}
 
 
 const Login = (props) => {
   // const [enteredEmail, setEnteredEmail] = useState('');
   // const [emailIsValid, setEmailIsValid] = useState();
-  const [enteredPassword, setEnteredPassword] = useState('');
+  // const [enteredPassword, setEnteredPassword] = useState('');
   const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
 
@@ -28,11 +34,16 @@ const Login = (props) => {
     val: ''
   });
 
+  const [passwordState, passwordDispatch] = useReducer(passwordReducer, {
+    isValid: '',
+    val: ''
+  });
+
   useEffect(() => {
     const identifier = setTimeout(() => {
       console.log('stimulating network request');
       setFormIsValid(
-        emailState.val.includes('@') && enteredPassword.trim().length > 6
+        emailState.val.includes('@') && passwordState.val.trim().length > 6
       );
     }, 500);
       //aaaaaaaaaa
@@ -40,7 +51,7 @@ const Login = (props) => {
       console.log('CLEANING');
       clearTimeout(identifier);
     }
-  }, [emailState.val, enteredPassword]);
+  }, [emailState.val, passwordState.val]);
 
   const emailChangeHandler = (event) => {
     emailDispatch({type: 'EMAIL_INPUT', val: event.target.value});
@@ -48,7 +59,9 @@ const Login = (props) => {
   };
 
   const passwordChangeHandler = (event) => {
-    setEnteredPassword(event.target.value);
+    passwordDispatch({type: 'PASSWORD_INPUT', val: event.target.value});
+
+    // setEnteredPassword(event.target.value);
   };
 
   const validateEmailHandler = () => {
@@ -57,12 +70,12 @@ const Login = (props) => {
   };
 
   const validatePasswordHandler = () => {
-    setPasswordIsValid(enteredPassword.trim().length > 6);
+    setPasswordIsValid(passwordState.val.trim().length > 6);
   };
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(emailState.val, enteredPassword);
+    props.onLogin(emailState.val, passwordState.val);
   };
 
   return (
@@ -91,7 +104,7 @@ const Login = (props) => {
           <input
             type="password"
             id="password"
-            value={enteredPassword}
+            value={passwordState.val}
             onChange={passwordChangeHandler}
             onBlur={validatePasswordHandler}
           />
