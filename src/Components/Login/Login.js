@@ -18,6 +18,9 @@ const passwordReducer = (preState, action) => {
   if(action.type === 'PASSWORD_INPUT') {
     return {...preState, val: action.val};
   }
+  if(action.type === 'VALIDATE_INPUT') {
+    return {...preState, isValid: action.val.length > 6};
+  }
   return preState;
 }
 
@@ -26,7 +29,7 @@ const Login = (props) => {
   // const [enteredEmail, setEnteredEmail] = useState('');
   // const [emailIsValid, setEmailIsValid] = useState();
   // const [enteredPassword, setEnteredPassword] = useState('');
-  const [passwordIsValid, setPasswordIsValid] = useState();
+  // const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
 
   const [emailState, emailDispatch] = useReducer(emailReducer, {
@@ -70,7 +73,8 @@ const Login = (props) => {
   };
 
   const validatePasswordHandler = () => {
-    setPasswordIsValid(passwordState.val.trim().length > 6);
+    passwordDispatch({type: 'VALIDATE_INPUT', val: passwordState.val});
+    // setPasswordIsValid(passwordState.val.trim().length > 6);
   };
 
   const submitHandler = (event) => {
@@ -97,7 +101,7 @@ const Login = (props) => {
         </div>
         <div
           className={`${classes.control} ${
-            passwordIsValid === false ? classes.invalid : ''
+            passwordState.isValid === false ? classes.invalid : ''
           }`}
         >
           <label htmlFor="password">Password</label>
