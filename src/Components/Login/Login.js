@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useContext } from 'react';
+import React, { useState, useEffect, useReducer, useContext, useRef } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
@@ -47,6 +47,9 @@ const Login = (props) => {
     val: ''
   });
 
+  const emailRef = useRef();
+  const passwordRef = useRef();
+
   useEffect(() => {
     const identifier = setTimeout(() => {
       console.log('stimulating network request');
@@ -84,13 +87,22 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    ctx.onLogin(emailState.val, passwordState.val);
+    if(!emailState.isValid) {
+      emailRef.current.focus();
+    }
+    if(!passwordState.isValid) {
+      passwordRef.current.focus();
+    }
+    if(emailState.isValid && passwordState.isValid) {
+      ctx.onLogin(emailState.val, passwordState.val);
+    }
   };
 
   return (
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
         <Input 
+          ref={emailRef}
           label="Email"
           type="email"
           onChange={emailChangeHandler}
@@ -100,6 +112,7 @@ const Login = (props) => {
           isValid={emailState.isValid}
         />
         <Input 
+          ref={passwordRef}
           label="Password"
           type="password"
           onChange={passwordChangeHandler}
@@ -109,7 +122,7 @@ const Login = (props) => {
           isValid={passwordState.isValid}
         />
         <div className={classes.actions}>
-          <Button type="submit" className={classes.btn} disabled={!formIsValid}>
+          <Button type="submit" className={classes.btn}>
             Login
           </Button>
         </div>
